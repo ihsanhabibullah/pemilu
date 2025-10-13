@@ -1,0 +1,42 @@
+:root{
+  --primary-color:#060025;
+  --secondary-color:#00cff9;
+  --light-color:#f3f3f3;
+  --dark-color:#333;
+  --max-width:1100px
+}
+
+.bg-navbar{
+  background-color: var(--primary-color);
+}
+
+.color-nav-link{
+  color: var(--secondary-color);
+
+}
+.color-light{
+  color:var(--light-color)
+}
+main{
+  min-height: 90vh;
+}
+
+footer{
+  height: 10vh;
+}
+
+.bg-blue{
+  background-color :#e0f900
+  
+}
+.bg-beck{
+  background-image:url('../images/1.jpg');
+
+}
+.ig{
+  color:rgb(228, 97, 119) ;
+}
+
+.git{
+  color:black;
+}
