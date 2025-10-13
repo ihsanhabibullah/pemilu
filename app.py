@@ -1,18 +1,21 @@
-from flask import Flask,render_template
+from flask import Flask, render_template, request , redirect, url_for,session
+from flask_mysqldb import MySQL , MySQLdb
 
 app=Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html', title="Home",isi="Selamat Datang Di Web Kagaku No Hikari")
+    return render_template('index.html')
 
-@app.route('/about')
-def about(): 
-    return render_template('about.html',title="About Me")
+@app.route('/verification')
+def verification():
+    return render_template('verification.html')
 
-@app.route('/myproject')
-def myproject() :
-    return render_template('myproject.html',title="My project",isi="  My public Project's :")
+@app.route('/login')
+def login():
+    return render_template('login.html')
 
-if __name__ == '__main__' :
+if __name__=='__main__':
     app.run(debug=True)
+
+
