@@ -49,37 +49,17 @@
     </div>
   </div>
 </nav>
-<div class="container py-5">
-    <h3 class="fw-bold mb-4 text-primary">Kelola Data Kandidat</h3>
-    <button class="btn btn-success mb-4 rounded-pill px-4">+ Tambah Kandidat</button>
 
-    <div class="card p-4">
-      <table class="table table-hover align-middle mb-0">
-        <thead class="table-primary">
-          <tr>
-            <th>No</th>
-            <th>Nama Kandidat</th>
-            <th>Visi</th>
-            <th>Misi</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>Amanda Putri</td>
-            <td>Menjadikan OSIS lebih aktif dan kreatif</td>
-            <td>Meningkatkan kegiatan ekstrakurikuler</td>
-            <td>
-              <button class="btn btn-warning btn-sm rounded-pill">Edit</button>
-              <button class="btn btn-danger btn-sm rounded-pill">Hapus</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+{% block content %}
+{% endblock %}
 
-  
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+
+{% block script %}
+{% endblock %}
+
 </body>
 </html>

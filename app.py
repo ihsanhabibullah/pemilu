@@ -15,6 +15,10 @@ def verification():
 def login():
     return render_template('login.html')
 
+@app.route('/pemilu1')
+def pemilu1():
+    return render_template('pemilu1/index.html')
+
 if __name__=='__main__':
     app.run(debug=True)
 
