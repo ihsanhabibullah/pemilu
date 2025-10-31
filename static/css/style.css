@@ -59,10 +59,10 @@ body {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 }
-.card:hover {
+/* .card:hover {
   transform: translateY(-8px);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-}
+} */
 
 .btn-primary {
   border-radius: 50px;

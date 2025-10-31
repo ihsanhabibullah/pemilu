@@ -1,0 +1,30 @@
+{% extends 'base_admin.html'%}
+{% block content %}
+<div class="container py-5">
+    <h3 class="fw-bold mb-4 text-primary">Tambah voters</h3>
+<form action="{{url_for('tambah_voters')}}" method="post">
+    <div class="card p-4">
+      <table class="table table-hover align-middle mb-0">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="floatingInput" placeholder="nama kelas" name="nama" required>
+                <label for="floatingInput"></i>Nama</label>
+            </div>
+            <div class="form-floating mb-3">
+                <select class="form-select" aria-label="Default select example" name="id_kelas" id="id_kelas">
+                <option selected>Nama kelas</option>
+                {% for item in data %}
+                <option value="{{item.id_kelas}}">{{item.kode_kelas}}</option>
+                {% endfor %}
+            </select>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <div style="justify-content: end;">
+                simpan
+                </div>
+            </button>
+            </div>
+      </table>
+    </div>
+</form>
+  </div>
+{% endblock %}
