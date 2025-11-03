@@ -10,7 +10,7 @@
             <div class="card p-4">
                 <form action="{{url_for('edit_kelas', id=data.id_kelas)}}" method="POST">
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="id_kelas" name="kode_kelas" value="{{data.kode_kelas}}">
+                        <input type="text" class="form-control" id="kode_kelas" name="kode_kelas" value="{{data.kode_kelas}}">
                         <label for="Kode_kelas">Kode Kelas</label>
                     </div>
                     <div class="text-end">    

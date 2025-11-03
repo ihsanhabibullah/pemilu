@@ -23,6 +23,7 @@
             <td>
               <a href="{{url_for('edit_kelas', id =item.id_kelas)}}"><button class="btn btn-warning btn-sm rounded-pill">Edit</button></a> 
               <a href="{{url_for('delete_kelas',id=item.id_kelas)}}" class="btn btn-danger btn-sm rounded-pill" type="submit"> Hapus </a>
+              <a href="{{url_for('lihat_pemilih',id=item.id_kelas)}}" class="btn btn-success btn-sm rounded-pill" type="submit"> lihat pemilih </a>
             </td>
           </tr>
           {% endfor %}

@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request , redirect, url_for,session
 from flask_mysqldb import MySQL , MySQLdb
 import bcrypt
+from secrets import token_hex
 
 app=Flask(__name__)
+app.secret_key = token_hex(16)
 app.config['mysql_cursorclass']='DictCursor'
 app.config['MYSQL_HOST']='localhost'
 app.config['MYSQL_USER']='root'
@@ -19,20 +21,36 @@ def index():
 def verification():
     return render_template('verification.html')
 
-@app.route('/login' ,methods=['GET','POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method=='POST':
-        username=request.form['username']
-        password=request.form['password']
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
 
-        cursor=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM admin where username=%s',[username])
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT * FROM admin WHERE username=%s', [username])
+        admin = cursor.fetchone()
         cursor.close()
-        admin=cursor.fetchone()
-        
-        return username
-        
+
+        if admin:
+            storedPassword = admin['password']
+            bytesStoredPassword = storedPassword.encode('utf-8')
+            bytesPassword = password.encode('utf-8')
+
+            if bcrypt.checkpw(bytesPassword, bytesStoredPassword):
+                session['id'] = str(admin.get('id_admin', ''))
+                session['nama'] = str(admin.get('nama', ''))
+                session['username'] = str(admin.get('username', ''))
+
+                print("DEBUG SESSION:", dict(session))  # opsional debug
+                return redirect(url_for('pemilu'))
+            else:
+                return render_template('login.html', error="Password salah pasep")
+        else:
+            return "Username tidak ditemukan"
+
     return render_template('login.html')
+
 
 @app.route('/seeder')
 def seeder() :
@@ -51,6 +69,11 @@ def seeder() :
     cursor.close()
 
     return "Data admin berhasil ditambahkan"
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
     
 @app.route('/pemilu')
 def pemilu():
@@ -62,10 +85,7 @@ def kelas():
     cursor.execute('SELECT * FROM kelas')
     data=cursor.fetchall()
     cursor.close()
-
     return render_template('kelas/index.html', data=data)
-
-
 
 @app.route('/tambah_kelas', methods=['GET','POST'])
 def tambah_kelas():
@@ -145,6 +165,16 @@ def edit_voters(id):
     kelas=cursor.fetchall()
     cursor.close()
     return render_template('voters/edit.html', data=voters, data_kelas=kelas)
+
+@app.route('/lihat_pemilih/<int:id>',methods=['GET','POST'])
+def lihat_pemilih(id):
+    cursor=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT voters.id_voter,voters.nama,kelas.kode_kelas FROM voters JOIN kelas ON voters.id_kelas=kelas.id_kelas WHERE voters.id_kelas=%s',[id])
+    data_pemilih=cursor.fetchall()
+    cursor.execute('SELECT * FROM kelas WHERE id_kelas=%s',[id])
+    data_kelas =cursor.fetchone()
+    cursor.close()
+    return render_template('voters/lihat_pemilih.html',data_pemilih=data_pemilih,data_kelas=data_kelas)
 
 @app.route('/hapus_voters/<int:id>', methods=['POST','GET'])
 def hapus_voters(id):
