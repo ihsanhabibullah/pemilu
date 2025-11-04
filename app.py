@@ -38,7 +38,7 @@ def login():
             bytesPassword = password.encode('utf-8')
 
             if bcrypt.checkpw(bytesPassword, bytesStoredPassword):
-                session['id'] = str(admin.get('id_admin', ''))
+                session['id_admin'] = str(admin.get('id_admin', ''))
                 session['nama'] = str(admin.get('nama', ''))
                 session['username'] = str(admin.get('username', ''))
 
@@ -77,7 +77,53 @@ def logout():
     
 @app.route('/pemilu')
 def pemilu():
-    return render_template('pemilu/index.html')
+
+    if 'id_admin' not in session:
+        return redirect(url_for('login'))
+    
+    cursor=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT * FROM pemilu')
+    pemilu=cursor.fetchall()
+    cursor.close()
+    return render_template('pemilu/index.html', data=pemilu)
+
+@app.route('/tambah_pemilu', methods=['GET','POST'])
+def tambah_pemilu():
+    if 'id_admin' not in session:
+        return redirect(url_for('login'))
+    if request.method=='POST':
+        nama_pemilu=request.form['nama_pemilu']
+        tanggal_mulai=request.form['tanggal_mulai']
+        tanggal_selesai=request.form['tanggal_selesai']
+        status=request.form['Status']
+
+        cursor=mysql.connection.cursor()
+        cursor.execute('INSERT INTO pemilu (nama_pemilu,tanggal_mulai,tanggal_selesai,status,id_admin) VALUES (%s,%s,%s,%s,%s)', (nama_pemilu,tanggal_mulai,tanggal_selesai,status,session['id_admin'],))
+        mysql.connection.commit()
+        cursor.close()
+        return redirect (url_for('pemilu'))
+
+    return render_template('pemilu/create.html')
+
+@app.route('/edit_pemilu/<int:id>', methods=['GET','POST'])
+def edit_pemilu(id):
+        if request.method=='POST':
+            nama_pemilu=request.form['nama_pemilu']
+            tanggal_mulai=request.form['tanggal_mulai']
+            tanggal_selesai=request.form['tanggal_selesai']
+            status=request.form['Status']
+
+            cursor=mysql.connection.cursor()
+            cursor.execute('UPDATE pemilu SET nama_pemilu=%s ,tanggal_mulai=%s ,tanggal_selesai=%s ,status=%s ,id_admin=%s WHERE id_pemilu=%s ', [nama_pemilu,tanggal_mulai,tanggal_selesai,status,session['id_admin'],id])
+            mysql.connection.commit()
+            cursor.close()
+            return redirect (url_for('pemilu'))
+                
+
+        cursor=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT * FROM pemilu WHERE id_pemilu=%s', [id])
+        pemilu=cursor.fetchone()
+        return render_template('pemilu/edit.html', data=pemilu)
 
 @app.route('/kelas')
 def kelas():
@@ -183,6 +229,8 @@ def hapus_voters(id):
     mysql.connection.commit()
     cur.close()
     return redirect(url_for('voters'))
+
+
 
 if __name__=='__main__':
     app.run(debug=True) 

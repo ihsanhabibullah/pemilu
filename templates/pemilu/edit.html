@@ -1,0 +1,39 @@
+{% extends 'base_admin.html'%}
+{% block content %}
+<div class="container py-5">
+    <h3 class="fw-bold mb-4 text-primary">Tambah Data Pemilu</h3>
+    <div class="row">
+        <div class="col-lg-6 col-md-8 col-sm-12 mx-auto">
+    <div class="card p-4">
+<form action="{{url_for('edit_pemilu',id=data.id_pemilu)}}" method="post">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="nama_pemilu" placeholder="Masukan Nama pemilu" name="nama_pemilu" value="{{data.nama_pemilu}}" required>
+                <label for="nama_pemilu"></i>Nama Pemilu</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="date" class="form-control" id="tanggal_mulai"  name="tanggal_mulai" value="{{data.tanggal_mulai}}" required>
+                <label for="tanggal_mulai"></i>Tanggal Mulai</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="date" class="form-control" id="tanggal_selesai" name="tanggal_selesai" value="{{data.tanggal_selesai}}" required>
+                <label for="tanggal_selesai"></i>Tanggal selesai</label>
+            </div>
+            <div class="form-floating mb-3">
+                <select class="form-select" aria-label="Floating label" name="Status" id="Status">
+                <option selected> pilih Status:</option>
+                <option value="T" {% if data.status=='T' %} selected {% endif %}>Aktif</option>
+                <option value="F" {% if data.status=='F' %} selected {% endif %}>Non-Aktif</option>
+            </select>
+            <label for="Status">Status</label> 
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <div style="justify-content: end;">simpan</div>
+            </button>
+            </div>
+      </table>
+    </div>
+</div>
+</form>
+  </div>
+{% endblock %}
