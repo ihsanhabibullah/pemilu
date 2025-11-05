@@ -1,0 +1,45 @@
+{% extends 'base_admin.html'%}
+{% block content %}
+<div class="container py-5">
+    <h3 class="fw-bold mb-4 text-primary">Tambah Data Kandidat</h3>
+    <div class="row">
+        <div class="col-lg-6 col-md-8 col-sm-12 mx-auto">
+    <div class="card p-4">
+<form action="{{url_for('tambah_kandidat')}}" method="post" enctype="multipart/form-data">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="nama" placeholder="Masukan Nama Kandidat" name="nama" required>
+                <label for="nama"></i>Nama Kandidat</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="file" class="form-control" id="foto"  name="foto" accept="image/*">
+                <label for="foto"></i>Foto</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="visi" name="visi" placeholder="Visi" required>
+                <label for="visi"></i>Visi</label>
+            </div>
+            <div class="form-floating mb-3">
+                <textarea class="form-control" id="misi" name="misi" placeholder="Misi" required></textarea>
+                <label for="misi"></i>Misi</label>
+            </div>
+            <div class="form-floating mb-3">
+                <select class="form-select" aria-label="Floating label" name="id_pemilu" id="id_pemilu">
+                <option selected>Pemilu Pemilu :</option>\
+                {% for item in data %}
+
+                <option value="{{item.id_pemilu}}">{{item.nama_pemilu}} </option>
+                {% endfor %}
+            </select>
+            <label for="id_pemilu">Pemilu</label> 
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <div style="justify-content: end;">simpan</div>
+            </button>
+            </div>
+    </table>
+    </div>
+</div>
+</form>
+</div>
+{% endblock %}

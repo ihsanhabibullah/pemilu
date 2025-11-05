@@ -2,6 +2,9 @@ from flask import Flask, render_template, request , redirect, url_for,session
 from flask_mysqldb import MySQL , MySQLdb
 import bcrypt
 from secrets import token_hex
+from werkzeug.utils import secure_filename
+from uuid import uuid4  
+import os
 
 app=Flask(__name__)
 app.secret_key = token_hex(16)
@@ -10,8 +13,19 @@ app.config['MYSQL_HOST']='localhost'
 app.config['MYSQL_USER']='root'
 app.config['MYSQL_PASSWORD']=''
 app.config['MYSQL_DB']='db_pemilu_osis'
+app.config['UPLOAD_FOLDER']='static/uploads'
+
 
 mysql=MySQL(app)
+
+def allowed_file(filename):
+    # apakah ada titik di file
+    if '.' not in filename:
+        return False
+    # pisahkan berdasarkan titik lalau ambil blok terakhir dari tanda titik
+    # misal filenamenya foto.profil.jpg ambil jpg-nya aj
+    ekstensi=filename.split('.')[-1].lower()
+    return ekstensi in ['png','jpg','jpeg','gif']
 
 @app.route('/')
 def index():
@@ -73,7 +87,7 @@ def seeder() :
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('index'))
+    return redirect(url_for('index')) 
     
 @app.route('/pemilu')
 def pemilu():
@@ -230,9 +244,82 @@ def hapus_voters(id):
     cur.close()
     return redirect(url_for('voters'))
 
+@app.route('/kandidat')
+def kandidat():
+    if 'id_admin' not in session :
+        return redirect(url_for('login'))
+    
+    cursor=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT * FROM candidates ')
+    kandidat=cursor.fetchall()
+    cursor.close()
+    return render_template('kandidat/index.html', data=kandidat)
+
+@app.route('/tambah_kandidat', methods=['GET','POST'])
+def tambah_kandidat() :
+    if 'id_admin' not in session :
+        return redirect(url_for('login'))
+    if request.method == 'POST' :
+        nama=request.form['nama'] 
+        visi=request.form['visi']
+        misi=request.form['misi']
+        id_pemilu=request.form['id_pemilu']
+        foto=request.files['foto'] 
+
+        if foto and allowed_file(foto.filename) :
+            filename=f"{uuid4().hex}_{secure_filename(foto.filename)}"
+            filepath=os.path.join(app.config['UPLOAD_FOLDER'],filename)
+            foto.save(filepath)
+        cursor=mysql.connection.cursor()
+        cursor.execute("INSERT INTO candidates(nama,visi,misi,id_pemilu,foto) values(%s,%s,%s,%s,%s)",[nama,visi,misi,id_pemilu,filename])
+        cursor.connection.commit()
+        cursor.close
+
+        return redirect(url_for('kandidat'))
+
+    cursor=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT * FROM pemilu WHERE status='T' ")
+    pemilu=cursor.fetchall()
+    cursor.close()
+    return render_template('kandidat/create.html', data=pemilu)
+
+@app.route('/edit_kandidat/<int:id>', methods=['GET','POST'])
+def edit_kandidat(id):
+    if 'id_admin' not in session :
+        return redirect(url_for('login'))
+    if request.method == 'POST' :
+        nama=request.form['nama'] 
+        visi=request.form['visi']
+        misi=request.form['misi']
+        id_pemilu=request.form['id_pemilu']
+        foto=request.files['foto'] 
+        
+        cursor=mysql.connection.cursor()
+
+        if foto and allowed_file(foto.filename) :
+
+            filename=f"{uuid4().hex}_{secure_filename(foto.filename)}"
+            filepath=os.path.join(app.config['UPLOAD_FOLDER'],filename)
+            foto.save(filepath)
+            cursor.execute("UPDATE candidates SET nama=%s,visi=%s,misi=%s,id_pemilu=%s,foto=%s WHERE id_candidate=%s ",[nama,visi,misi,id_pemilu,filename,id])
+        else:
+            cursor.execute("UPDATE candidates SET nama=%s,visi=%s,misi=%s,id_pemilu=%s WHERE id_candidate=%s ",[nama,visi,misi,id_pemilu,id])
+            
+            
+        cursor.connection.commit()
+        cursor.close
+
+        return redirect(url_for('kandidat'))
+
+    cursor=mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT * FROM pemilu WHERE status='T' ")
+    pemilu=cursor.fetchall()
+    cursor.execute("SELECT * FROM candidates WHERE id_candidate=%s",(id,))
+    kandidat=cursor.fetchone()
+    cursor.close()
+
+    return render_template('kandidat/edit.html', data=pemilu, kandidat=kandidat)
 
 
 if __name__=='__main__':
     app.run(debug=True) 
-
-
